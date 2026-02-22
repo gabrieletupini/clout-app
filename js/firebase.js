@@ -1,7 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js';
 import {
   getFirestore, collection, addDoc, updateDoc, deleteDoc, doc,
-  query, where, orderBy, onSnapshot, serverTimestamp, getDoc, setDoc
+  query, where, onSnapshot, serverTimestamp, getDoc, setDoc
 } from 'https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -43,8 +43,7 @@ export function subscribeToMonth(year, month, callback) {
   const q = query(
     collection(db, 'days'),
     where('date', '>=', startDate),
-    where('date', '<=', endDate),
-    orderBy('date')
+    where('date', '<=', endDate)
   );
 
   return onSnapshot(q, (snapshot) => {
@@ -63,37 +62,57 @@ export function subscribeToMonth(year, month, callback) {
 
 export async function createDay(data) {
   reportSync('syncing');
-  const docRef = await addDoc(collection(db, 'days'), {
-    ...data,
-    createdAt: serverTimestamp(),
-    updatedAt: serverTimestamp()
-  });
-  reportSync('synced');
-  return docRef.id;
+  try {
+    const docRef = await addDoc(collection(db, 'days'), {
+      ...data,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    reportSync('synced');
+    return docRef.id;
+  } catch (err) {
+    console.error('createDay error:', err);
+    reportSync('error');
+  }
 }
 
 export async function updateDay(docId, fields) {
   reportSync('syncing');
-  await updateDoc(doc(db, 'days', docId), {
-    ...fields,
-    updatedAt: serverTimestamp()
-  });
-  reportSync('synced');
+  try {
+    await updateDoc(doc(db, 'days', docId), {
+      ...fields,
+      updatedAt: serverTimestamp()
+    });
+    reportSync('synced');
+  } catch (err) {
+    console.error('updateDay error:', err);
+    reportSync('error');
+  }
 }
 
 export async function deleteDay(docId) {
   reportSync('syncing');
-  await deleteDoc(doc(db, 'days', docId));
-  reportSync('synced');
+  try {
+    await deleteDoc(doc(db, 'days', docId));
+    reportSync('synced');
+  } catch (err) {
+    console.error('deleteDay error:', err);
+    reportSync('error');
+  }
 }
 
 export async function moveDayToDate(docId, newDate) {
   reportSync('syncing');
-  await updateDoc(doc(db, 'days', docId), {
-    date: newDate,
-    updatedAt: serverTimestamp()
-  });
-  reportSync('synced');
+  try {
+    await updateDoc(doc(db, 'days', docId), {
+      date: newDate,
+      updatedAt: serverTimestamp()
+    });
+    reportSync('synced');
+  } catch (err) {
+    console.error('moveDayToDate error:', err);
+    reportSync('error');
+  }
 }
 
 // ===== Settings CRUD =====
@@ -101,17 +120,27 @@ export async function moveDayToDate(docId, newDate) {
 const SETTINGS_REF = () => doc(db, 'settings', 'config');
 
 export async function getSettings() {
-  const snap = await getDoc(SETTINGS_REF());
-  return snap.exists() ? snap.data() : null;
+  try {
+    const snap = await getDoc(SETTINGS_REF());
+    return snap.exists() ? snap.data() : null;
+  } catch (err) {
+    console.error('getSettings error:', err);
+    return null;
+  }
 }
 
 export async function saveSettings(data) {
   reportSync('syncing');
-  await setDoc(SETTINGS_REF(), {
-    ...data,
-    updatedAt: serverTimestamp()
-  }, { merge: true });
-  reportSync('synced');
+  try {
+    await setDoc(SETTINGS_REF(), {
+      ...data,
+      updatedAt: serverTimestamp()
+    }, { merge: true });
+    reportSync('synced');
+  } catch (err) {
+    console.error('saveSettings error:', err);
+    reportSync('error');
+  }
 }
 
 export function subscribeToSettings(callback) {
@@ -121,5 +150,6 @@ export function subscribeToSettings(callback) {
   }, (err) => {
     console.error('Settings subscribe error:', err);
     reportSync('error');
+    callback(null);
   });
 }

@@ -67,7 +67,9 @@ document.addEventListener('DOMContentLoaded', () => {
   initFirebase();
 
   // Wire sync status
+  let connected = false;
   onSyncStatus((status) => {
+    connected = true;
     syncIndicator.className = 'sync-indicator';
     if (status === 'synced') {
       syncIndicator.classList.add('synced');
@@ -79,6 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
       syncLabel.textContent = 'Saving...';
     }
   });
+
+  // Connection timeout — if no response in 8s, show error
+  setTimeout(() => {
+    if (!connected) {
+      syncIndicator.classList.add('error');
+      syncLabel.textContent = 'Connection failed';
+    }
+  }, 8000);
 
   const now = new Date();
   currentYear = now.getFullYear();
@@ -94,7 +104,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (!settingsInitialized) {
       // First time — save defaults to Firestore so they're editable
       endeavors = [...DEFAULT_ENDEAVORS];
-      await saveSettings({ endeavors });
+      try { await saveSettings({ endeavors }); } catch (e) { console.error('Failed to save defaults:', e); }
     } else {
       endeavors = [...DEFAULT_ENDEAVORS];
     }
@@ -351,45 +361,50 @@ function renderEndeavorsForm() {
   endeavorsList.innerHTML = '';
 
   endeavors.forEach((e, idx) => {
-    const row = document.createElement('div');
-    row.className = 'endeavor-row';
-    row.style.setProperty('--endeavor-color', e.color);
+    const card = document.createElement('div');
+    card.className = 'endeavor-card';
+    card.style.setProperty('--endeavor-color', e.color);
 
-    // Number label
+    // Header row: number, icon, name, color
+    const header = document.createElement('div');
+    header.className = 'endeavor-card-header';
+
     const num = document.createElement('span');
-    num.className = 'endeavor-row-number';
-    num.textContent = `${idx + 1}.`;
-    row.appendChild(num);
+    num.className = 'endeavor-number';
+    num.textContent = idx + 1;
 
-    // Color picker
-    const colorInput = document.createElement('input');
-    colorInput.type = 'color';
-    colorInput.className = 'endeavor-color';
-    colorInput.value = e.color;
-    colorInput.addEventListener('input', () => {
-      row.style.setProperty('--endeavor-color', colorInput.value);
-    });
-
-    // Icon button
     const iconBtn = document.createElement('button');
     iconBtn.className = 'endeavor-icon-btn';
     iconBtn.textContent = e.icon;
     iconBtn.type = 'button';
 
-    // Name input
     const nameInput = document.createElement('input');
     nameInput.type = 'text';
     nameInput.className = 'endeavor-name';
     nameInput.value = e.label;
     nameInput.placeholder = 'Endeavor name';
 
-    row.appendChild(colorInput);
-    row.appendChild(iconBtn);
-    row.appendChild(nameInput);
+    const colorInput = document.createElement('input');
+    colorInput.type = 'color';
+    colorInput.className = 'endeavor-color';
+    colorInput.value = e.color;
+    colorInput.addEventListener('input', () => {
+      card.style.setProperty('--endeavor-color', colorInput.value);
+    });
 
-    // Platforms
+    header.appendChild(num);
+    header.appendChild(iconBtn);
+    header.appendChild(nameInput);
+    header.appendChild(colorInput);
+    card.appendChild(header);
+
+    // Body row: platforms + preview
+    const body = document.createElement('div');
+    body.className = 'endeavor-card-body';
+
     const platsDiv = document.createElement('div');
     platsDiv.className = 'endeavor-platforms';
+    const platNames = { instagram: 'Instagram', tiktok: 'TikTok', twitch: 'Twitch' };
     ['instagram', 'tiktok', 'twitch'].forEach(p => {
       const label = document.createElement('label');
       const cb = document.createElement('input');
@@ -397,14 +412,18 @@ function renderEndeavorsForm() {
       cb.value = p;
       cb.checked = e.platforms.includes(p);
       label.appendChild(cb);
-      label.appendChild(document.createTextNode(p === 'instagram' ? ' IG' : p === 'tiktok' ? ' TT' : ' TW'));
+      label.appendChild(document.createTextNode(` ${platNames[p]}`));
       platsDiv.appendChild(label);
     });
-    row.appendChild(platsDiv);
+    body.appendChild(platsDiv);
 
-    endeavorsList.appendChild(row);
+    const preview = document.createElement('span');
+    preview.className = 'endeavor-preview';
+    preview.textContent = 'Default platforms';
+    body.appendChild(preview);
+    card.appendChild(body);
 
-    // Icon picker
+    // Icon picker (inside the card)
     const picker = document.createElement('div');
     picker.className = 'icon-picker';
     ICON_PRESETS.forEach(icon => {
@@ -421,17 +440,19 @@ function renderEndeavorsForm() {
       });
       picker.appendChild(opt);
     });
-    endeavorsList.appendChild(picker);
+    card.appendChild(picker);
 
     iconBtn.addEventListener('click', () => {
       document.querySelectorAll('.icon-picker.open').forEach(p => p.classList.remove('open'));
       picker.classList.toggle('open');
     });
+
+    endeavorsList.appendChild(card);
   });
 }
 
 async function handleSaveSettings() {
-  const rows = endeavorsList.querySelectorAll('.endeavor-row');
+  const rows = endeavorsList.querySelectorAll('.endeavor-card');
   const updated = [];
 
   rows.forEach((row, idx) => {
