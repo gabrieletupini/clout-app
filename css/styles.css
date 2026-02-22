@@ -2,24 +2,37 @@
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 :root {
-  --bg-primary: #0d1117;
-  --bg-secondary: #161b22;
-  --bg-tertiary: #1c2128;
-  --bg-hover: #252c35;
-  --text-primary: #e6edf3;
-  --text-secondary: #8b949e;
-  --border-color: #30363d;
-  --accent-blue: #58a6ff;
-  --color-music: #e74c3c;
-  --color-stream: #9b59b6;
-  --color-skit: #2ecc71;
-  --radius: 8px;
-  --shadow: 0 2px 8px rgba(0,0,0,0.3);
+  --bg-primary: #1a1410;
+  --bg-secondary: #231d17;
+  --bg-tertiary: #2a2318;
+  --bg-hover: #342c22;
+  --parchment: #3a3228;
+  --parchment-light: #4a3f33;
+  --text-primary: #e8dcc8;
+  --text-secondary: #9c8e7c;
+  --border-color: #4a3f33;
+  --border-glow: #6b5d4a;
+  --gold: #d4a843;
+  --gold-bright: #f0c850;
+  --gold-dim: #8a7030;
+  --stone: #6b6358;
+  --stone-light: #8a7e70;
+  --accent-blue: #6ba3be;
+  --color-1: #c0392b;
+  --color-2: #8e44ad;
+  --color-3: #27ae60;
+  --radius: 6px;
+  --shadow: 0 2px 12px rgba(0,0,0,0.5);
+  --font-medieval: 'MedievalSharp', cursive;
+  --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  font-family: var(--font-body);
   background: var(--bg-primary);
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(42,35,24,0.5) 0%, transparent 70%),
+    radial-gradient(ellipse at 80% 50%, rgba(42,35,24,0.3) 0%, transparent 70%);
   color: var(--text-primary);
   min-height: 100vh;
   padding: 16px;
@@ -32,21 +45,40 @@ body {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0 20px;
+  padding: 12px 0 8px;
   flex-wrap: wrap;
   gap: 12px;
 }
 
-.logo {
-  font-size: 1.5rem;
-  letter-spacing: 4px;
-  font-weight: 900;
-  text-transform: uppercase;
-  background: linear-gradient(135deg, var(--color-music), var(--color-stream), var(--color-skit));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
+
+.logo {
+  font-family: var(--font-medieval);
+  font-size: 1.8rem;
+  font-weight: 400;
+  color: var(--gold);
+  text-shadow: 0 0 20px rgba(212,168,67,0.3), 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.settings-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 1rem;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.settings-btn:hover { border-color: var(--gold); color: var(--gold); }
 
 .month-nav {
   display: flex;
@@ -57,28 +89,227 @@ body {
 .nav-btn {
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  color: var(--text-primary);
+  color: var(--text-secondary);
   width: 36px;
   height: 36px;
   border-radius: var(--radius);
   cursor: pointer;
   font-size: 1rem;
-  transition: background 0.15s;
+  transition: all 0.2s;
 }
-.nav-btn:hover { background: var(--bg-hover); }
+.nav-btn:hover { background: var(--bg-hover); border-color: var(--gold-dim); color: var(--gold); }
 
 .month-label {
-  font-size: 1.1rem;
-  font-weight: 600;
-  min-width: 160px;
+  font-family: var(--font-medieval);
+  font-size: 1.2rem;
+  font-weight: 400;
+  min-width: 180px;
   text-align: center;
+  color: var(--text-primary);
+}
+
+/* ===== Quest Path ===== */
+.quest-section {
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  padding: 16px 20px 12px;
+  margin: 12px 0 16px;
+  position: relative;
+}
+
+.quest-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.quest-title {
+  font-family: var(--font-medieval);
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.gold-counter {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-medieval);
+  font-size: 0.95rem;
+  color: var(--gold);
+}
+
+.coin-icon {
+  width: 20px;
+  height: 20px;
+  background: radial-gradient(circle at 40% 35%, var(--gold-bright), var(--gold), var(--gold-dim));
+  border-radius: 50%;
+  border: 2px solid var(--gold-dim);
+  display: inline-block;
+  box-shadow: 0 0 8px rgba(212,168,67,0.4);
+}
+
+.quest-path {
+  position: relative;
+  height: 60px;
+  display: flex;
+  align-items: center;
+}
+
+.path-line {
+  position: absolute;
+  top: 50%;
+  left: 24px;
+  right: 24px;
+  height: 4px;
+  background: var(--border-color);
+  border-radius: 2px;
+  transform: translateY(-50%);
+}
+
+.path-line-fill {
+  position: absolute;
+  top: 50%;
+  left: 24px;
+  height: 4px;
+  background: linear-gradient(90deg, var(--gold-dim), var(--gold));
+  border-radius: 2px;
+  transform: translateY(-50%);
+  transition: width 0.6s ease;
+  width: 0;
+  box-shadow: 0 0 8px rgba(212,168,67,0.3);
+}
+
+.checkpoints {
+  position: relative;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  z-index: 2;
+  padding: 0 12px;
+}
+
+.checkpoint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  position: relative;
+}
+
+.checkpoint-node {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--bg-primary);
+  border: 3px solid var(--stone);
+  transition: all 0.4s;
+  position: relative;
+}
+
+.checkpoint.completed .checkpoint-node {
+  border-color: var(--gold);
+  background: var(--gold-dim);
+  box-shadow: 0 0 12px rgba(212,168,67,0.5);
+}
+
+.checkpoint-label {
+  font-size: 0.6rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.checkpoint-coin {
+  position: absolute;
+  top: -18px;
+  width: 14px;
+  height: 14px;
+  background: radial-gradient(circle at 40% 35%, var(--gold-bright), var(--gold));
+  border-radius: 50%;
+  border: 1.5px solid var(--gold-dim);
+  box-shadow: 0 0 6px rgba(212,168,67,0.6);
+  display: none;
+}
+.checkpoint.has-gold .checkpoint-coin { display: block; }
+
+/* Avatar */
+.quest-avatar {
+  position: absolute;
+  z-index: 3;
+  transition: left 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  left: 12px;
+  top: -2px;
+  filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+}
+
+.avatar-sprite {
+  width: 28px;
+  height: 34px;
+  position: relative;
+}
+
+/* Pixel-art hooded adventurer via CSS */
+.avatar-sprite::before {
+  content: '';
+  position: absolute;
+  /* Hood */
+  width: 16px;
+  height: 12px;
+  background: #5a7a4a;
+  border-radius: 8px 8px 2px 2px;
+  top: 0;
+  left: 6px;
+  box-shadow:
+    /* Face */
+    2px 10px 0 0 #e8c89c,
+    4px 10px 0 0 #e8c89c,
+    6px 10px 0 0 #e8c89c,
+    8px 10px 0 0 #e8c89c,
+    10px 10px 0 0 #e8c89c,
+    12px 10px 0 0 #e8c89c,
+    /* Eyes */
+    4px 8px 0 0 #2a1a0a,
+    10px 8px 0 0 #2a1a0a;
+}
+
+.avatar-sprite::after {
+  content: '';
+  position: absolute;
+  /* Cloak body */
+  width: 20px;
+  height: 16px;
+  background: #4a6a3a;
+  border-radius: 2px 2px 4px 4px;
+  top: 14px;
+  left: 4px;
+  box-shadow:
+    /* Feet */
+    2px 16px 0 0 #5a3a1a,
+    14px 16px 0 0 #5a3a1a,
+    /* Staff */
+    20px -14px 0 0 #8a6a3a,
+    20px -12px 0 0 #8a6a3a,
+    20px -10px 0 0 #8a6a3a,
+    20px -8px 0 0 #8a6a3a,
+    20px -6px 0 0 #8a6a3a,
+    20px -4px 0 0 #8a6a3a,
+    20px -2px 0 0 #8a6a3a,
+    20px 0px 0 0 #8a6a3a,
+    20px 2px 0 0 #8a6a3a,
+    20px 4px 0 0 #8a6a3a,
+    20px 6px 0 0 #8a6a3a,
+    20px 8px 0 0 #8a6a3a,
+    20px 10px 0 0 #8a6a3a,
+    20px 12px 0 0 #8a6a3a;
 }
 
 /* ===== Legend ===== */
 .legend {
   display: flex;
   gap: 20px;
-  padding: 8px 0 16px;
+  padding: 4px 0 12px;
   flex-wrap: wrap;
 }
 
@@ -86,7 +317,7 @@ body {
   display: flex;
   align-items: center;
   gap: 6px;
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--text-secondary);
 }
 
@@ -95,6 +326,7 @@ body {
   height: 10px;
   border-radius: 50%;
   flex-shrink: 0;
+  border: 1px solid rgba(255,255,255,0.1);
 }
 
 /* ===== Calendar Grid ===== */
@@ -107,10 +339,12 @@ body {
 
 .weekday {
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--stone-light);
   padding: 6px 0;
+  text-transform: uppercase;
+  letter-spacing: 1px;
 }
 
 .calendar-grid {
@@ -128,43 +362,51 @@ body {
   padding: 6px;
   position: relative;
   cursor: pointer;
-  transition: background 0.15s, border-color 0.15s;
+  transition: all 0.2s;
 }
-.day-cell:hover { background: var(--bg-tertiary); }
+.day-cell:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--border-glow);
+}
 .day-cell.empty {
   background: transparent;
   border-color: transparent;
   cursor: default;
 }
-.day-cell.today { border-color: var(--accent-blue); }
+.day-cell.today {
+  border-color: var(--gold-dim);
+  box-shadow: 0 0 8px rgba(212,168,67,0.15);
+}
 .day-cell.drag-over {
   background: var(--bg-hover);
-  outline: 2px dashed var(--accent-blue);
+  outline: 2px dashed var(--gold);
   outline-offset: -2px;
 }
 
 .day-number {
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
-  color: var(--text-secondary);
+  color: var(--stone-light);
   display: block;
   margin-bottom: 4px;
 }
 
 /* ===== Day Card ===== */
 .day-card {
-  border-radius: 6px;
+  border-radius: 4px;
   padding: 6px 8px;
-  background: var(--bg-tertiary);
+  background: var(--parchment);
   border-left: 4px solid var(--type-color, var(--border-color));
   cursor: grab;
   transition: opacity 0.15s, transform 0.15s;
+  border-top: 1px solid rgba(255,255,255,0.04);
 }
 .day-card:active { cursor: grabbing; }
 .day-card.dragging { opacity: 0.35; transform: scale(0.95); }
 .day-card.suggested {
-  opacity: 0.35;
+  opacity: 0.3;
   border-left-style: dashed;
+  background: transparent;
 }
 
 .card-header {
@@ -175,7 +417,7 @@ body {
 }
 
 .content-type-badge {
-  font-size: 0.65rem;
+  font-size: 0.6rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -185,12 +427,12 @@ body {
 .done-check {
   width: 14px;
   height: 14px;
-  accent-color: var(--color-skit);
+  accent-color: var(--gold);
   cursor: pointer;
 }
 
 .card-title {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   color: var(--text-primary);
   white-space: nowrap;
   overflow: hidden;
@@ -205,7 +447,7 @@ body {
 }
 
 .tag {
-  font-size: 0.55rem;
+  font-size: 0.5rem;
   font-weight: 700;
   padding: 1px 4px;
   border-radius: 3px;
@@ -220,11 +462,11 @@ body {
 .day-card.done { opacity: 0.5; }
 .day-card.done .card-title { text-decoration: line-through; }
 
-/* ===== Modal ===== */
+/* ===== Modal (shared styles) ===== */
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.75);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -236,12 +478,12 @@ body {
 .modal {
   background: var(--bg-secondary);
   border: 1px solid var(--border-color);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 24px;
   width: 100%;
   max-width: 440px;
   position: relative;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.5);
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.03) inset;
 }
 
 .modal-close {
@@ -257,20 +499,23 @@ body {
 }
 .modal-close:hover { color: var(--text-primary); }
 
-.modal-date {
-  font-size: 1rem;
-  font-weight: 600;
+.modal-date, .modal-heading {
+  font-family: var(--font-medieval);
+  font-size: 1.1rem;
+  font-weight: 400;
   margin-bottom: 20px;
-  color: var(--text-primary);
+  color: var(--gold);
 }
 
 .field-label {
   display: block;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   color: var(--text-secondary);
   margin-bottom: 6px;
   margin-top: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
 }
 
 .type-selector {
@@ -281,35 +526,35 @@ body {
 .type-btn {
   flex: 1;
   padding: 8px 4px;
-  border-radius: 6px;
+  border-radius: var(--radius);
   border: 2px solid var(--border-color);
   background: var(--bg-tertiary);
   color: var(--text-secondary);
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   font-weight: 600;
   cursor: pointer;
-  transition: border-color 0.15s, color 0.15s, background 0.15s;
+  transition: all 0.2s;
 }
 .type-btn:hover { border-color: var(--type-color); color: var(--type-color); }
 .type-btn.active {
   border-color: var(--type-color);
   color: var(--type-color);
-  background: color-mix(in srgb, var(--type-color) 12%, var(--bg-tertiary));
+  background: color-mix(in srgb, var(--type-color) 10%, var(--bg-tertiary));
 }
 
 .field-input, .field-textarea {
   width: 100%;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: 6px;
+  border-radius: var(--radius);
   padding: 8px 10px;
   color: var(--text-primary);
   font-family: inherit;
   font-size: 0.85rem;
   outline: none;
-  transition: border-color 0.15s;
+  transition: border-color 0.2s;
 }
-.field-input:focus, .field-textarea:focus { border-color: var(--accent-blue); }
+.field-input:focus, .field-textarea:focus { border-color: var(--gold-dim); }
 .field-textarea { resize: vertical; }
 
 .platform-checks {
@@ -327,7 +572,7 @@ body {
   cursor: pointer;
 }
 .check-label input[type="checkbox"] {
-  accent-color: var(--accent-blue);
+  accent-color: var(--gold);
   width: 16px;
   height: 16px;
 }
@@ -347,22 +592,131 @@ body {
   flex: 1;
   padding: 10px;
   border: none;
-  border-radius: 6px;
+  border-radius: var(--radius);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity 0.15s;
+  transition: all 0.2s;
 }
 .btn:hover { opacity: 0.85; }
-.btn-save { background: #238636; color: #fff; }
-.btn-delete { background: #da3633; color: #fff; }
+.btn-save {
+  background: linear-gradient(135deg, #2d6a1e, #238636);
+  color: #fff;
+  border: 1px solid #2d6a1e;
+}
+.btn-delete {
+  background: linear-gradient(135deg, #8a2020, #da3633);
+  color: #fff;
+  border: 1px solid #8a2020;
+}
+
+/* ===== Settings Modal ===== */
+.endeavor-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 10px;
+  padding: 10px;
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+}
+
+.endeavor-color {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  background: none;
+}
+
+.endeavor-name {
+  flex: 1;
+  background: var(--parchment);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 6px 8px;
+  color: var(--text-primary);
+  font-size: 0.85rem;
+  outline: none;
+}
+.endeavor-name:focus { border-color: var(--gold-dim); }
+
+.endeavor-icon-btn {
+  background: var(--parchment);
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  padding: 4px 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+.endeavor-icon-btn:hover { border-color: var(--gold-dim); }
+
+.icon-picker {
+  display: none;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px;
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  margin-top: 6px;
+  margin-bottom: 6px;
+}
+.icon-picker.open { display: flex; }
+
+.icon-option {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  border: 1px solid var(--border-color);
+  background: var(--bg-tertiary);
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.icon-option:hover { border-color: var(--gold); background: var(--parchment); }
+.icon-option.selected { border-color: var(--gold); background: var(--parchment-light); }
+
+.endeavor-platforms {
+  display: flex;
+  gap: 6px;
+  font-size: 0.75rem;
+}
+
+.endeavor-platforms label {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  color: var(--text-secondary);
+  cursor: pointer;
+}
+.endeavor-platforms input {
+  accent-color: var(--gold);
+  width: 13px;
+  height: 13px;
+}
+
+/* ===== Week Dividers in Calendar ===== */
+.week-divider {
+  grid-column: 1 / -1;
+  height: 0;
+}
 
 /* ===== Responsive ===== */
 @media (max-width: 600px) {
   .header { flex-direction: column; align-items: flex-start; }
   .day-cell { min-height: 70px; padding: 4px; }
-  .content-type-badge { font-size: 0.55rem; }
-  .card-title { font-size: 0.6rem; }
+  .content-type-badge { font-size: 0.5rem; }
+  .card-title { font-size: 0.55rem; }
   .platform-tags { display: none; }
   .modal { padding: 16px; }
+  .quest-section { padding: 12px 14px 8px; }
+  .avatar-sprite { transform: scale(0.8); }
 }

@@ -4,12 +4,18 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Clout Quest</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
 <body>
 
   <header class="header">
-    <h1 class="logo">CLOUT QUEST</h1>
+    <div class="header-left">
+      <h1 class="logo">Clout Quest</h1>
+      <button id="settings-btn" class="settings-btn" aria-label="Settings" title="Edit Endeavors">&#9881;</button>
+    </div>
     <nav class="month-nav">
       <button id="prev-month" class="nav-btn" aria-label="Previous month">&#9664;</button>
       <span id="month-label" class="month-label">February 2026</span>
@@ -17,29 +23,36 @@
     </nav>
   </header>
 
-  <div class="legend">
-    <div class="legend-item">
-      <span class="legend-dot" style="background:#e74c3c"></span>
-      Music Video
+  <!-- Quest Path -->
+  <div class="quest-section">
+    <div class="quest-header">
+      <span class="quest-title">Monthly Quest</span>
+      <div class="gold-counter">
+        <span class="coin-icon"></span>
+        <span id="gold-count">0</span>
+      </div>
     </div>
-    <div class="legend-item">
-      <span class="legend-dot" style="background:#9b59b6"></span>
-      Live Stream
-    </div>
-    <div class="legend-item">
-      <span class="legend-dot" style="background:#2ecc71"></span>
-      Humor Skit
+    <div class="quest-path" id="quest-path">
+      <div class="path-line"></div>
+      <div class="path-line-fill" id="path-fill"></div>
+      <div class="quest-avatar" id="quest-avatar">
+        <div class="avatar-sprite"></div>
+      </div>
+      <div class="checkpoints" id="checkpoints"></div>
     </div>
   </div>
 
+  <!-- Legend (dynamic, populated by JS) -->
+  <div class="legend" id="legend"></div>
+
   <div class="calendar-weekdays">
-    <div class="weekday">SUN</div>
-    <div class="weekday">MON</div>
-    <div class="weekday">TUE</div>
-    <div class="weekday">WED</div>
-    <div class="weekday">THU</div>
-    <div class="weekday">FRI</div>
-    <div class="weekday">SAT</div>
+    <div class="weekday">Sun</div>
+    <div class="weekday">Mon</div>
+    <div class="weekday">Tue</div>
+    <div class="weekday">Wed</div>
+    <div class="weekday">Thu</div>
+    <div class="weekday">Fri</div>
+    <div class="weekday">Sat</div>
   </div>
 
   <div id="calendar-grid" class="calendar-grid"></div>
@@ -50,12 +63,8 @@
       <button id="modal-close" class="modal-close" aria-label="Close">&times;</button>
       <h2 id="modal-date" class="modal-date"></h2>
 
-      <label class="field-label" for="modal-type">Content Type</label>
-      <div class="type-selector" id="modal-type">
-        <button class="type-btn" data-type="music_video" style="--type-color:#e74c3c">Music Video</button>
-        <button class="type-btn" data-type="live_stream" style="--type-color:#9b59b6">Live Stream</button>
-        <button class="type-btn" data-type="humor_skit" style="--type-color:#2ecc71">Humor Skit</button>
-      </div>
+      <label class="field-label">Endeavor</label>
+      <div class="type-selector" id="modal-type"></div>
 
       <label class="field-label" for="modal-title">Title</label>
       <input type="text" id="modal-title" class="field-input" placeholder="Content idea...">
@@ -77,6 +86,21 @@
       <div class="modal-actions">
         <button id="modal-save" class="btn btn-save">Save</button>
         <button id="modal-delete" class="btn btn-delete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div id="settings-backdrop" class="modal-backdrop hidden">
+    <div class="modal" role="dialog" aria-modal="true" style="max-width:500px">
+      <button id="settings-close" class="modal-close" aria-label="Close">&times;</button>
+      <h2 class="modal-heading">Your Endeavors</h2>
+      <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:16px;">
+        Customize the 3 content formats for your quest.
+      </p>
+      <div id="endeavors-list"></div>
+      <div class="modal-actions" style="margin-top:16px;">
+        <button id="settings-save" class="btn btn-save">Save Endeavors</button>
       </div>
     </div>
   </div>

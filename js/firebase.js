@@ -1,7 +1,7 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js';
 import {
   getFirestore, collection, addDoc, updateDoc, deleteDoc, doc,
-  query, where, orderBy, onSnapshot, serverTimestamp
+  query, where, orderBy, onSnapshot, serverTimestamp, getDoc, setDoc
 } from 'https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js';
 
 const firebaseConfig = {
@@ -22,15 +22,10 @@ export function initFirebase() {
   return db;
 }
 
-export function getDb() {
-  return db;
-}
-
-// Pad month/day to 2 digits
 function pad(n) { return String(n).padStart(2, '0'); }
 
-// Subscribe to real-time updates for a given month.
-// callback receives a Map<dateString, { docId, ...data }>
+// ===== Days CRUD =====
+
 export function subscribeToMonth(year, month, callback) {
   const startDate = `${year}-${pad(month)}-01`;
   const endDate = `${year}-${pad(month)}-31`;
@@ -76,5 +71,27 @@ export async function moveDayToDate(docId, newDate) {
   await updateDoc(doc(db, 'days', docId), {
     date: newDate,
     updatedAt: serverTimestamp()
+  });
+}
+
+// ===== Settings CRUD =====
+
+const SETTINGS_REF = () => doc(db, 'settings', 'config');
+
+export async function getSettings() {
+  const snap = await getDoc(SETTINGS_REF());
+  return snap.exists() ? snap.data() : null;
+}
+
+export async function saveSettings(data) {
+  await setDoc(SETTINGS_REF(), {
+    ...data,
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+}
+
+export function subscribeToSettings(callback) {
+  return onSnapshot(SETTINGS_REF(), (snap) => {
+    callback(snap.exists() ? snap.data() : null);
   });
 }
