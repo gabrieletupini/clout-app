@@ -38,6 +38,44 @@ body {
   margin: 0 auto;
 }
 
+/* ===== Sync Indicator ===== */
+.sync-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: flex-end;
+  padding: 4px 0 2px;
+}
+
+.sync-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-muted);
+  transition: background 0.4s, box-shadow 0.4s;
+}
+
+.sync-indicator.synced .sync-dot {
+  background: #3fb950;
+  box-shadow: 0 0 6px rgba(63,185,80,0.5);
+}
+
+.sync-indicator.error .sync-dot {
+  background: #da3633;
+  box-shadow: 0 0 6px rgba(218,54,51,0.4);
+}
+
+.sync-label {
+  font-size: 0.6rem;
+  color: var(--text-muted);
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.sync-indicator.synced .sync-label { color: #3fb950; }
+.sync-indicator.error .sync-label { color: #da3633; }
+
 /* ===== Header ===== */
 .header {
   display: flex;
@@ -236,6 +274,30 @@ body {
   display: none;
 }
 .checkpoint.has-gold .checkpoint-coin { display: block; }
+
+/* Quest Lore */
+.quest-lore {
+  margin-top: 14px;
+  font-size: 0.72rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+  font-style: italic;
+  text-align: center;
+  padding: 0 8px;
+}
+
+.quest-lore strong {
+  color: var(--gold);
+  font-style: normal;
+  font-weight: 600;
+}
+
+.quest-lore-name {
+  color: #6bba62;
+  font-style: normal;
+  font-weight: 700;
+  letter-spacing: 0.3px;
+}
 
 /* Avatar — clean SVG */
 .quest-avatar {
@@ -610,13 +672,23 @@ body {
 /* ===== Settings Modal ===== */
 .endeavor-row {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   align-items: center;
-  margin-bottom: 10px;
-  padding: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 12px;
+  padding: 14px;
   background: var(--bg-tertiary);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius);
+  border-left: 4px solid var(--endeavor-color, var(--border-color));
+  border-radius: 2px var(--radius) var(--radius) 2px;
+  transition: border-color 0.2s;
+}
+
+.endeavor-row-number {
+  font-family: var(--font-medieval);
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  min-width: 18px;
 }
 
 .endeavor-color {

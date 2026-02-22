@@ -1,6 +1,6 @@
 import {
   initFirebase, subscribeToMonth, createDay, updateDay, deleteDay,
-  moveDayToDate, saveSettings, subscribeToSettings
+  moveDayToDate, saveSettings, subscribeToSettings, onSyncStatus
 } from './firebase.js';
 import {
   renderCalendar, computeWeeklyProgress,
@@ -13,6 +13,7 @@ let unsubMonth = null;
 let unsubSettings = null;
 let currentDaysMap = new Map();
 let endeavors = [...DEFAULT_ENDEAVORS];
+let settingsInitialized = false;
 
 // ===== DOM refs =====
 const grid = document.getElementById('calendar-grid');
@@ -52,6 +53,10 @@ const goldCountEl = document.getElementById('gold-count');
 const tipBanner = document.getElementById('tip-banner');
 const tipClose = document.getElementById('tip-close');
 
+// Sync
+const syncIndicator = document.getElementById('sync-indicator');
+const syncLabel = document.getElementById('sync-label');
+
 let editingDate = null;
 let editingDocId = null;
 
@@ -61,21 +66,39 @@ const MONTHS = ['January','February','March','April','May','June','July','August
 document.addEventListener('DOMContentLoaded', () => {
   initFirebase();
 
+  // Wire sync status
+  onSyncStatus((status) => {
+    syncIndicator.className = 'sync-indicator';
+    if (status === 'synced') {
+      syncIndicator.classList.add('synced');
+      syncLabel.textContent = 'Synced';
+    } else if (status === 'error') {
+      syncIndicator.classList.add('error');
+      syncLabel.textContent = 'Offline';
+    } else {
+      syncLabel.textContent = 'Saving...';
+    }
+  });
+
   const now = new Date();
   currentYear = now.getFullYear();
   currentMonth = now.getMonth() + 1;
 
-  // Check if tip was dismissed
   if (localStorage.getItem('clout-tip-dismissed')) {
     tipBanner.style.display = 'none';
   }
 
-  unsubSettings = subscribeToSettings((data) => {
+  unsubSettings = subscribeToSettings(async (data) => {
     if (data && data.endeavors && data.endeavors.length === 3) {
       endeavors = data.endeavors;
+    } else if (!settingsInitialized) {
+      // First time — save defaults to Firestore so they're editable
+      endeavors = [...DEFAULT_ENDEAVORS];
+      await saveSettings({ endeavors });
     } else {
       endeavors = [...DEFAULT_ENDEAVORS];
     }
+    settingsInitialized = true;
     renderLegend();
     rebuildTypeSelector();
     renderCalendar(grid, currentYear, currentMonth, currentDaysMap, endeavors, {
@@ -177,7 +200,6 @@ function updateQuestPath() {
 
   goldCountEl.textContent = goldCoins;
 
-  // Position avatar
   requestAnimationFrame(() => {
     const totalCp = weeks.length;
     if (totalCp > 0) {
@@ -202,19 +224,16 @@ function wireEvents() {
     loadMonth();
   });
 
-  // Tip dismiss
   tipClose.addEventListener('click', () => {
     tipBanner.style.display = 'none';
     localStorage.setItem('clout-tip-dismissed', '1');
   });
 
-  // Day modal
   modalClose.addEventListener('click', closeModal);
   backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
   modalSave.addEventListener('click', handleSave);
   modalDelete.addEventListener('click', handleDelete);
 
-  // Settings
   settingsBtn.addEventListener('click', openSettings);
   settingsClose.addEventListener('click', closeSettings);
   settingsBackdrop.addEventListener('click', (e) => { if (e.target === settingsBackdrop) closeSettings(); });
@@ -224,7 +243,6 @@ function wireEvents() {
     if (e.key === 'Escape') { closeModal(); closeSettings(); }
   });
 
-  // Checkbox toggle
   grid.addEventListener('toggle-done', async (e) => {
     const { docId, done } = e.detail;
     if (docId) await updateDay(docId, { done });
@@ -252,9 +270,7 @@ function openModal(dateStr, dayData) {
     platTwitch.checked = plats.includes('twitch');
     modalDelete.style.display = '';
   } else {
-    // No auto-selection — let user pick
     modalType.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
-    // Select first by default so something is picked
     const first = modalType.querySelector('.type-btn');
     if (first) first.classList.add('active');
     modalTitle.value = '';
@@ -337,17 +353,30 @@ function renderEndeavorsForm() {
   endeavors.forEach((e, idx) => {
     const row = document.createElement('div');
     row.className = 'endeavor-row';
+    row.style.setProperty('--endeavor-color', e.color);
 
+    // Number label
+    const num = document.createElement('span');
+    num.className = 'endeavor-row-number';
+    num.textContent = `${idx + 1}.`;
+    row.appendChild(num);
+
+    // Color picker
     const colorInput = document.createElement('input');
     colorInput.type = 'color';
     colorInput.className = 'endeavor-color';
     colorInput.value = e.color;
+    colorInput.addEventListener('input', () => {
+      row.style.setProperty('--endeavor-color', colorInput.value);
+    });
 
+    // Icon button
     const iconBtn = document.createElement('button');
     iconBtn.className = 'endeavor-icon-btn';
     iconBtn.textContent = e.icon;
     iconBtn.type = 'button';
 
+    // Name input
     const nameInput = document.createElement('input');
     nameInput.type = 'text';
     nameInput.className = 'endeavor-name';
@@ -358,6 +387,7 @@ function renderEndeavorsForm() {
     row.appendChild(iconBtn);
     row.appendChild(nameInput);
 
+    // Platforms
     const platsDiv = document.createElement('div');
     platsDiv.className = 'endeavor-platforms';
     ['instagram', 'tiktok', 'twitch'].forEach(p => {
@@ -367,7 +397,7 @@ function renderEndeavorsForm() {
       cb.value = p;
       cb.checked = e.platforms.includes(p);
       label.appendChild(cb);
-      label.appendChild(document.createTextNode(p === 'instagram' ? 'IG' : p === 'tiktok' ? 'TT' : 'TW'));
+      label.appendChild(document.createTextNode(p === 'instagram' ? ' IG' : p === 'tiktok' ? ' TT' : ' TW'));
       platsDiv.appendChild(label);
     });
     row.appendChild(platsDiv);
