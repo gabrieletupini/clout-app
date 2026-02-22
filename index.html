@@ -36,13 +36,60 @@
       <div class="path-line"></div>
       <div class="path-line-fill" id="path-fill"></div>
       <div class="quest-avatar" id="quest-avatar">
-        <div class="avatar-sprite"></div>
+        <svg viewBox="0 0 32 44" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <!-- Cloak -->
+          <path d="M8 18 C8 18 6 38 7 40 L25 40 C26 38 24 18 24 18" fill="#3d6b35"/>
+          <path d="M8 18 C8 18 6 38 7 40 L25 40 C26 38 24 18 24 18" fill="url(#cloakShade)"/>
+          <!-- Hood -->
+          <ellipse cx="16" cy="14" rx="10" ry="12" fill="#4a7a3e"/>
+          <ellipse cx="16" cy="14" rx="10" ry="12" fill="url(#hoodShade)"/>
+          <!-- Face shadow -->
+          <ellipse cx="16" cy="17" rx="6" ry="5" fill="#1a1410"/>
+          <!-- Face -->
+          <ellipse cx="16" cy="16.5" rx="5.5" ry="4.5" fill="#dbb588"/>
+          <!-- Eyes -->
+          <circle cx="13.5" cy="16" r="1" fill="#1a1410"/>
+          <circle cx="18.5" cy="16" r="1" fill="#1a1410"/>
+          <!-- Eye glint -->
+          <circle cx="14" cy="15.5" r="0.4" fill="#fff" opacity="0.7"/>
+          <circle cx="19" cy="15.5" r="0.4" fill="#fff" opacity="0.7"/>
+          <!-- Staff -->
+          <rect x="26" y="4" width="2" height="36" rx="1" fill="#8a6a3a"/>
+          <circle cx="27" cy="4" r="3" fill="#d4a843" opacity="0.9"/>
+          <circle cx="27" cy="4" r="1.5" fill="#f0c850"/>
+          <!-- Boots -->
+          <ellipse cx="11" cy="41" rx="3" ry="2" fill="#5a3a1a"/>
+          <ellipse cx="21" cy="41" rx="3" ry="2" fill="#5a3a1a"/>
+          <!-- Belt -->
+          <rect x="9" y="26" width="14" height="2" rx="1" fill="#8a6a3a"/>
+          <rect x="14.5" y="25" width="3" height="4" rx="1" fill="#d4a843"/>
+          <defs>
+            <linearGradient id="cloakShade" x1="8" y1="18" x2="24" y2="40" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#000" stop-opacity="0"/>
+              <stop offset="1" stop-color="#000" stop-opacity="0.3"/>
+            </linearGradient>
+            <linearGradient id="hoodShade" x1="6" y1="2" x2="26" y2="26" gradientUnits="userSpaceOnUse">
+              <stop offset="0" stop-color="#fff" stop-opacity="0.1"/>
+              <stop offset="1" stop-color="#000" stop-opacity="0.2"/>
+            </linearGradient>
+          </defs>
+        </svg>
       </div>
       <div class="checkpoints" id="checkpoints"></div>
     </div>
   </div>
 
-  <!-- Legend (dynamic, populated by JS) -->
+  <!-- Tip Banner -->
+  <div class="tip-banner" id="tip-banner">
+    <span class="tip-banner-icon">&#x1F4DC;</span>
+    <span id="tip-text">
+      Click any day to plan your content. Rotate your <strong>3 endeavors</strong> to keep things fresh.
+      Complete <strong>half the week</strong> to advance your hero &mdash; finish the <strong>full week</strong> to earn a gold coin!
+    </span>
+    <button class="tip-banner-close" id="tip-close" aria-label="Dismiss">&times;</button>
+  </div>
+
+  <!-- Legend (dynamic) -->
   <div class="legend" id="legend"></div>
 
   <div class="calendar-weekdays">
@@ -67,10 +114,10 @@
       <div class="type-selector" id="modal-type"></div>
 
       <label class="field-label" for="modal-title">Title</label>
-      <input type="text" id="modal-title" class="field-input" placeholder="Content idea...">
+      <input type="text" id="modal-title" class="field-input" placeholder="What are you creating?">
 
       <label class="field-label" for="modal-notes">Notes</label>
-      <textarea id="modal-notes" class="field-textarea" rows="3" placeholder="Details, links, ideas..."></textarea>
+      <textarea id="modal-notes" class="field-textarea" rows="3" placeholder="Details, ideas, links..."></textarea>
 
       <label class="field-label">Platforms</label>
       <div class="platform-checks">
@@ -95,7 +142,7 @@
     <div class="modal" role="dialog" aria-modal="true" style="max-width:500px">
       <button id="settings-close" class="modal-close" aria-label="Close">&times;</button>
       <h2 class="modal-heading">Your Endeavors</h2>
-      <p style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:16px;">
+      <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;line-height:1.5;">
         Customize the 3 content formats for your quest.
       </p>
       <div id="endeavors-list"></div>

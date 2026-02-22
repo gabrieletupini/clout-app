@@ -1,9 +1,9 @@
 import {
   initFirebase, subscribeToMonth, createDay, updateDay, deleteDay,
-  moveDayToDate, getSettings, saveSettings, subscribeToSettings
+  moveDayToDate, saveSettings, subscribeToSettings
 } from './firebase.js';
 import {
-  renderCalendar, computeWeeklyProgress, suggestedContentType,
+  renderCalendar, computeWeeklyProgress,
   DEFAULT_ENDEAVORS, ICON_PRESETS, endeavorMap
 } from './calendar.js';
 
@@ -35,7 +35,7 @@ const platInstagram = document.getElementById('plat-instagram');
 const platTiktok = document.getElementById('plat-tiktok');
 const platTwitch = document.getElementById('plat-twitch');
 
-// Settings modal
+// Settings
 const settingsBtn = document.getElementById('settings-btn');
 const settingsBackdrop = document.getElementById('settings-backdrop');
 const settingsClose = document.getElementById('settings-close');
@@ -48,20 +48,28 @@ const pathFill = document.getElementById('path-fill');
 const checkpointsEl = document.getElementById('checkpoints');
 const goldCountEl = document.getElementById('gold-count');
 
+// Tip
+const tipBanner = document.getElementById('tip-banner');
+const tipClose = document.getElementById('tip-close');
+
 let editingDate = null;
 let editingDocId = null;
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 
 // ===== Init =====
-document.addEventListener('DOMContentLoaded', async () => {
+document.addEventListener('DOMContentLoaded', () => {
   initFirebase();
 
   const now = new Date();
   currentYear = now.getFullYear();
   currentMonth = now.getMonth() + 1;
 
-  // Load settings first, then start
+  // Check if tip was dismissed
+  if (localStorage.getItem('clout-tip-dismissed')) {
+    tipBanner.style.display = 'none';
+  }
+
   unsubSettings = subscribeToSettings((data) => {
     if (data && data.endeavors && data.endeavors.length === 3) {
       endeavors = data.endeavors;
@@ -70,7 +78,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     renderLegend();
     rebuildTypeSelector();
-    // Re-render calendar with new endeavors
     renderCalendar(grid, currentYear, currentMonth, currentDaysMap, endeavors, {
       onDayClick: openModal,
       onDrop: handleDrop,
@@ -102,27 +109,31 @@ function renderLegend() {
   endeavors.forEach(e => {
     const item = document.createElement('div');
     item.className = 'legend-item';
-    item.innerHTML = `<span class="legend-dot" style="background:${e.color}"></span>${e.icon} ${e.label}`;
+    const dot = document.createElement('span');
+    dot.className = 'legend-dot';
+    dot.style.background = e.color;
+    item.appendChild(dot);
+    item.appendChild(document.createTextNode(` ${e.icon} ${e.label}`));
     legend.appendChild(item);
   });
 }
 
-// ===== Type Selector (dynamic) =====
+// ===== Type Selector =====
 function rebuildTypeSelector() {
   modalType.innerHTML = '';
   endeavors.forEach(e => {
     const btn = document.createElement('button');
     btn.className = 'type-btn';
+    btn.type = 'button';
     btn.dataset.type = e.key;
     btn.style.setProperty('--type-color', e.color);
     btn.textContent = `${e.icon} ${e.label}`;
     btn.addEventListener('click', () => {
       modalType.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
-      const defaults = e.platforms;
-      platInstagram.checked = defaults.includes('instagram');
-      platTiktok.checked = defaults.includes('tiktok');
-      platTwitch.checked = defaults.includes('twitch');
+      platInstagram.checked = e.platforms.includes('instagram');
+      platTiktok.checked = e.platforms.includes('tiktok');
+      platTwitch.checked = e.platforms.includes('twitch');
     });
     modalType.appendChild(btn);
   });
@@ -140,43 +151,42 @@ function updateQuestPath() {
     const cp = document.createElement('div');
     cp.className = 'checkpoint';
 
-    // Half week = 4+ done days (or half of total if partial week)
     const threshold = Math.ceil(w.total / 2);
     const isCompleted = w.completed >= threshold;
     const isGold = w.completed >= w.total && w.total > 0;
 
-    if (isCompleted) {
-      cp.classList.add('completed');
-      completedWeeks++;
-    }
-    if (isGold) {
-      cp.classList.add('has-gold');
-      goldCoins++;
-    }
+    if (isCompleted) { cp.classList.add('completed'); completedWeeks++; }
+    if (isGold) { cp.classList.add('has-gold'); goldCoins++; }
 
-    cp.innerHTML = `
-      <div class="checkpoint-coin"></div>
-      <div class="checkpoint-node"></div>
-      <span class="checkpoint-label">Wk${i + 1}</span>
-    `;
+    const coinDiv = document.createElement('div');
+    coinDiv.className = 'checkpoint-coin';
+    cp.appendChild(coinDiv);
+
+    const node = document.createElement('div');
+    node.className = 'checkpoint-node';
+    node.title = `Week ${i + 1}: ${w.completed}/${w.total} done`;
+    cp.appendChild(node);
+
+    const label = document.createElement('span');
+    label.className = 'checkpoint-label';
+    label.textContent = `Wk${i + 1}`;
+    cp.appendChild(label);
 
     checkpointsEl.appendChild(cp);
   });
 
   goldCountEl.textContent = goldCoins;
 
-  // Avatar position
-  const totalCheckpoints = weeks.length;
-  if (totalCheckpoints > 0) {
-    // Position avatar at the last completed checkpoint
-    const progress = completedWeeks / totalCheckpoints;
-    const pathWidth = checkpointsEl.offsetWidth;
-    const avatarOffset = progress * (pathWidth - 48) + 12;
-    questAvatar.style.left = avatarOffset + 'px';
-
-    // Fill the path line
-    pathFill.style.width = (progress * (pathWidth - 48)) + 'px';
-  }
+  // Position avatar
+  requestAnimationFrame(() => {
+    const totalCp = weeks.length;
+    if (totalCp > 0) {
+      const pathWidth = checkpointsEl.offsetWidth;
+      const progress = completedWeeks / totalCp;
+      questAvatar.style.left = (progress * (pathWidth - 40) + 4) + 'px';
+      pathFill.style.width = (progress * (pathWidth - 40)) + 'px';
+    }
+  });
 }
 
 // ===== Events =====
@@ -192,27 +202,29 @@ function wireEvents() {
     loadMonth();
   });
 
+  // Tip dismiss
+  tipClose.addEventListener('click', () => {
+    tipBanner.style.display = 'none';
+    localStorage.setItem('clout-tip-dismissed', '1');
+  });
+
   // Day modal
   modalClose.addEventListener('click', closeModal);
   backdrop.addEventListener('click', (e) => { if (e.target === backdrop) closeModal(); });
   modalSave.addEventListener('click', handleSave);
   modalDelete.addEventListener('click', handleDelete);
 
-  // Settings modal
+  // Settings
   settingsBtn.addEventListener('click', openSettings);
   settingsClose.addEventListener('click', closeSettings);
   settingsBackdrop.addEventListener('click', (e) => { if (e.target === settingsBackdrop) closeSettings(); });
   settingsSave.addEventListener('click', handleSaveSettings);
 
-  // Escape closes any modal
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      closeModal();
-      closeSettings();
-    }
+    if (e.key === 'Escape') { closeModal(); closeSettings(); }
   });
 
-  // Checkbox toggle via event delegation
+  // Checkbox toggle
   grid.addEventListener('toggle-done', async (e) => {
     const { docId, done } = e.detail;
     if (docId) await updateDay(docId, { done });
@@ -229,8 +241,6 @@ function openModal(dateStr, dayData) {
   const monthName = d.toLocaleDateString('en-US', { month: 'long' });
   modalDate.textContent = `${dayName}, ${monthName} ${d.getDate()}, ${d.getFullYear()}`;
 
-  const eMap = endeavorMap(endeavors);
-
   if (dayData) {
     selectType(dayData.contentType);
     modalTitle.value = dayData.title || '';
@@ -242,16 +252,17 @@ function openModal(dateStr, dayData) {
     platTwitch.checked = plats.includes('twitch');
     modalDelete.style.display = '';
   } else {
-    const sugKey = suggestedContentType(dateStr, endeavors);
-    selectType(sugKey);
+    // No auto-selection — let user pick
+    modalType.querySelectorAll('.type-btn').forEach(b => b.classList.remove('active'));
+    // Select first by default so something is picked
+    const first = modalType.querySelector('.type-btn');
+    if (first) first.classList.add('active');
     modalTitle.value = '';
     modalNotes.value = '';
     modalDone.checked = false;
-    const sug = eMap[sugKey];
-    const defaults = sug ? sug.platforms : [];
-    platInstagram.checked = defaults.includes('instagram');
-    platTiktok.checked = defaults.includes('tiktok');
-    platTwitch.checked = defaults.includes('twitch');
+    platInstagram.checked = false;
+    platTiktok.checked = false;
+    platTwitch.checked = false;
     modalDelete.style.display = 'none';
   }
 
@@ -326,35 +337,27 @@ function renderEndeavorsForm() {
   endeavors.forEach((e, idx) => {
     const row = document.createElement('div');
     row.className = 'endeavor-row';
-    row.dataset.idx = idx;
 
-    // Color picker
     const colorInput = document.createElement('input');
     colorInput.type = 'color';
     colorInput.className = 'endeavor-color';
     colorInput.value = e.color;
-    colorInput.dataset.field = 'color';
 
-    // Icon button
     const iconBtn = document.createElement('button');
     iconBtn.className = 'endeavor-icon-btn';
     iconBtn.textContent = e.icon;
-    iconBtn.dataset.field = 'icon';
     iconBtn.type = 'button';
 
-    // Name input
     const nameInput = document.createElement('input');
     nameInput.type = 'text';
     nameInput.className = 'endeavor-name';
     nameInput.value = e.label;
-    nameInput.dataset.field = 'label';
     nameInput.placeholder = 'Endeavor name';
 
     row.appendChild(colorInput);
     row.appendChild(iconBtn);
     row.appendChild(nameInput);
 
-    // Platforms
     const platsDiv = document.createElement('div');
     platsDiv.className = 'endeavor-platforms';
     ['instagram', 'tiktok', 'twitch'].forEach(p => {
@@ -371,7 +374,7 @@ function renderEndeavorsForm() {
 
     endeavorsList.appendChild(row);
 
-    // Icon picker dropdown
+    // Icon picker
     const picker = document.createElement('div');
     picker.className = 'icon-picker';
     ICON_PRESETS.forEach(icon => {
@@ -391,7 +394,6 @@ function renderEndeavorsForm() {
     endeavorsList.appendChild(picker);
 
     iconBtn.addEventListener('click', () => {
-      // Close other pickers
       document.querySelectorAll('.icon-picker.open').forEach(p => p.classList.remove('open'));
       picker.classList.toggle('open');
     });
@@ -400,23 +402,16 @@ function renderEndeavorsForm() {
 
 async function handleSaveSettings() {
   const rows = endeavorsList.querySelectorAll('.endeavor-row');
-  const pickers = endeavorsList.querySelectorAll('.icon-picker');
   const updated = [];
 
   rows.forEach((row, idx) => {
-    const color = row.querySelector('[data-field="color"]').value;
-    const icon = row.querySelector('[data-field="icon"]').textContent;
-    const label = row.querySelector('[data-field="label"]').value.trim() || `Endeavor ${idx + 1}`;
+    const color = row.querySelector('.endeavor-color').value;
+    const icon = row.querySelector('.endeavor-icon-btn').textContent;
+    const label = row.querySelector('.endeavor-name').value.trim() || `Endeavor ${idx + 1}`;
     const platforms = [];
     row.querySelectorAll('.endeavor-platforms input:checked').forEach(cb => platforms.push(cb.value));
 
-    updated.push({
-      key: `endeavor_${idx + 1}`,
-      label,
-      icon,
-      color,
-      platforms
-    });
+    updated.push({ key: `endeavor_${idx + 1}`, label, icon, color, platforms });
   });
 
   await saveSettings({ endeavors: updated });
