@@ -20,7 +20,7 @@
   <header class="header">
     <div class="header-left">
       <h1 class="logo">Clout Quest</h1>
-      <button id="settings-btn" class="settings-btn" aria-label="Settings" title="Edit Endeavors">&#9881;</button>
+      <button id="settings-btn" class="settings-btn" aria-label="Settings" title="Edit Endeavors">&#9881; Settings</button>
     </div>
     <nav class="month-nav">
       <button id="prev-month" class="nav-btn" aria-label="Previous month">&#9664;</button>
@@ -100,7 +100,10 @@
   </div>
 
   <!-- Legend (dynamic) -->
-  <div class="legend" id="legend"></div>
+  <div class="legend-section">
+    <div class="legend" id="legend"></div>
+    <button id="edit-endeavors-btn" class="edit-endeavors-btn">Edit Endeavors</button>
+  </div>
 
   <div class="calendar-weekdays">
     <div class="weekday">Sun</div>
@@ -149,7 +152,7 @@
 
   <!-- Settings Modal -->
   <div id="settings-backdrop" class="modal-backdrop hidden">
-    <div class="modal" role="dialog" aria-modal="true" style="max-width:500px">
+    <div class="modal settings-modal" role="dialog" aria-modal="true">
       <button id="settings-close" class="modal-close" aria-label="Close">&times;</button>
       <h2 class="modal-heading">Your Endeavors</h2>
       <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:16px;line-height:1.5;">

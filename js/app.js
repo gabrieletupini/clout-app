@@ -38,6 +38,7 @@ const platTwitch = document.getElementById('plat-twitch');
 
 // Settings
 const settingsBtn = document.getElementById('settings-btn');
+const editEndeavorsBtn = document.getElementById('edit-endeavors-btn');
 const settingsBackdrop = document.getElementById('settings-backdrop');
 const settingsClose = document.getElementById('settings-close');
 const settingsSave = document.getElementById('settings-save');
@@ -245,6 +246,7 @@ function wireEvents() {
   modalDelete.addEventListener('click', handleDelete);
 
   settingsBtn.addEventListener('click', openSettings);
+  editEndeavorsBtn.addEventListener('click', openSettings);
   settingsClose.addEventListener('click', closeSettings);
   settingsBackdrop.addEventListener('click', (e) => { if (e.target === settingsBackdrop) closeSettings(); });
   settingsSave.addEventListener('click', handleSaveSettings);

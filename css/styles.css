@@ -103,19 +103,19 @@ body {
 
 .settings-btn {
   background: none;
-  border: 1px solid transparent;
+  border: 1px solid var(--border-color);
   color: var(--text-muted);
-  width: 30px;
-  height: 30px;
-  border-radius: 50%;
+  padding: 5px 12px;
+  border-radius: var(--radius);
   cursor: pointer;
-  font-size: 0.95rem;
+  font-size: 0.72rem;
   transition: all 0.2s;
   display: flex;
   align-items: center;
-  justify-content: center;
+  gap: 5px;
+  letter-spacing: 0.3px;
 }
-.settings-btn:hover { color: var(--gold); border-color: var(--border-color); }
+.settings-btn:hover { color: var(--gold); border-color: var(--gold-dim); background: var(--bg-tertiary); }
 
 .month-nav {
   display: flex;
@@ -316,11 +316,37 @@ body {
 }
 
 /* ===== Legend ===== */
+.legend-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 14px;
+  gap: 12px;
+}
+
 .legend {
   display: flex;
   gap: 18px;
-  padding: 0 0 14px;
   flex-wrap: wrap;
+}
+
+.edit-endeavors-btn {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  color: var(--gold);
+  padding: 7px 16px;
+  border-radius: var(--radius);
+  font-size: 0.72rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.3px;
+  white-space: nowrap;
+}
+.edit-endeavors-btn:hover {
+  border-color: var(--gold-dim);
+  background: color-mix(in srgb, var(--gold) 8%, var(--bg-tertiary));
+  box-shadow: 0 0 12px rgba(212,168,67,0.1);
 }
 
 .legend-item {
@@ -670,6 +696,10 @@ body {
 .btn-delete:hover { background: #2a1515; }
 
 /* ===== Settings Modal ===== */
+.settings-modal {
+  max-width: 520px;
+}
+
 .endeavor-card {
   margin-bottom: 14px;
   background: var(--bg-tertiary);
@@ -823,4 +853,6 @@ body {
   .quest-avatar svg { width: 22px; height: 28px; }
   .tip-banner { font-size: 0.72rem; }
   .day-hint { display: none; }
+  .legend-section { flex-direction: column; align-items: flex-start; }
+  .edit-endeavors-btn { align-self: stretch; text-align: center; }
 }
