@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Clout Quest</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <header class="header">
+    <h1 class="logo">CLOUT QUEST</h1>
+    <nav class="month-nav">
+      <button id="prev-month" class="nav-btn" aria-label="Previous month">&#9664;</button>
+      <span id="month-label" class="month-label">February 2026</span>
+      <button id="next-month" class="nav-btn" aria-label="Next month">&#9654;</button>
+    </nav>
+  </header>
+
+  <div class="legend">
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#e74c3c"></span>
+      Music Video
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#9b59b6"></span>
+      Live Stream
+    </div>
+    <div class="legend-item">
+      <span class="legend-dot" style="background:#2ecc71"></span>
+      Humor Skit
+    </div>
+  </div>
+
+  <div class="calendar-weekdays">
+    <div class="weekday">SUN</div>
+    <div class="weekday">MON</div>
+    <div class="weekday">TUE</div>
+    <div class="weekday">WED</div>
+    <div class="weekday">THU</div>
+    <div class="weekday">FRI</div>
+    <div class="weekday">SAT</div>
+  </div>
+
+  <div id="calendar-grid" class="calendar-grid"></div>
+
+  <!-- Day Detail Modal -->
+  <div id="modal-backdrop" class="modal-backdrop hidden">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button id="modal-close" class="modal-close" aria-label="Close">&times;</button>
+      <h2 id="modal-date" class="modal-date"></h2>
+
+      <label class="field-label" for="modal-type">Content Type</label>
+      <div class="type-selector" id="modal-type">
+        <button class="type-btn" data-type="music_video" style="--type-color:#e74c3c">Music Video</button>
+        <button class="type-btn" data-type="live_stream" style="--type-color:#9b59b6">Live Stream</button>
+        <button class="type-btn" data-type="humor_skit" style="--type-color:#2ecc71">Humor Skit</button>
+      </div>
+
+      <label class="field-label" for="modal-title">Title</label>
+      <input type="text" id="modal-title" class="field-input" placeholder="Content idea...">
+
+      <label class="field-label" for="modal-notes">Notes</label>
+      <textarea id="modal-notes" class="field-textarea" rows="3" placeholder="Details, links, ideas..."></textarea>
+
+      <label class="field-label">Platforms</label>
+      <div class="platform-checks">
+        <label class="check-label"><input type="checkbox" id="plat-instagram" value="instagram"> Instagram</label>
+        <label class="check-label"><input type="checkbox" id="plat-tiktok" value="tiktok"> TikTok</label>
+        <label class="check-label"><input type="checkbox" id="plat-twitch" value="twitch"> Twitch</label>
+      </div>
+
+      <label class="check-label done-label">
+        <input type="checkbox" id="modal-done"> Mark as Done
+      </label>
+
+      <div class="modal-actions">
+        <button id="modal-save" class="btn btn-save">Save</button>
+        <button id="modal-delete" class="btn btn-delete">Delete</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
