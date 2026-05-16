@@ -28,6 +28,14 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
+  <script>
+    (function() {
+      try {
+        var t = localStorage.getItem('clout-theme');
+        if (t === 'light') document.documentElement.setAttribute('data-theme', 'light');
+      } catch (e) {}
+    })();
+  </script>
 </head>
 <body>
 
@@ -41,6 +49,9 @@
     <div class="header-left">
       <h1 class="logo">Clout Quest</h1>
       <button id="settings-btn" class="settings-btn" aria-label="Settings" title="Edit Endeavors">&#9881; Settings</button>
+      <button id="theme-btn" class="theme-btn" aria-label="Toggle theme" title="Toggle light/dark theme">
+        <span class="theme-icon-dark">&#9790;</span><span class="theme-icon-light">&#9728;</span>
+      </button>
     </div>
     <nav class="month-nav">
       <button id="prev-month" class="nav-btn" aria-label="Previous month">&#9664;</button>

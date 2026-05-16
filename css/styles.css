@@ -22,10 +22,39 @@
   --color-1: #c0392b;
   --color-2: #8e44ad;
   --color-3: #27ae60;
+  --modal-backdrop: rgba(0, 0, 0, 0.8);
+  --shadow-modal: 0 16px 48px rgba(0,0,0,0.5);
+  --avatar-shadow: rgba(0,0,0,0.6);
   --radius: 8px;
   --radius-lg: 12px;
   --font-medieval: 'MedievalSharp', cursive;
   --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+}
+
+:root[data-theme="light"] {
+  --bg-primary: #f5ecd6;
+  --bg-secondary: #fbf3df;
+  --bg-tertiary: #efe3c4;
+  --bg-hover: #e6d6ae;
+  --parchment: #ecdcb6;
+  --parchment-light: #f5e9c8;
+  --text-primary: #3a2c1c;
+  --text-secondary: #6b5638;
+  --text-muted: #8d785a;
+  --border-color: #d4c08e;
+  --border-glow: #b89b5c;
+  --gold: #a8801c;
+  --gold-bright: #c89b2c;
+  --gold-dim: #6b5210;
+  --stone: #8d785a;
+  --stone-light: #a89270;
+  --accent: #a8801c;
+  --color-1: #a52a1a;
+  --color-2: #6b2a85;
+  --color-3: #1f8048;
+  --modal-backdrop: rgba(60, 45, 25, 0.45);
+  --shadow-modal: 0 16px 48px rgba(80, 60, 30, 0.25);
+  --avatar-shadow: rgba(80, 60, 30, 0.35);
 }
 
 body {
@@ -116,6 +145,26 @@ body {
   letter-spacing: 0.3px;
 }
 .settings-btn:hover { color: var(--gold); border-color: var(--gold-dim); background: var(--bg-tertiary); }
+
+.theme-btn {
+  background: none;
+  border: 1px solid var(--border-color);
+  color: var(--text-muted);
+  width: 30px;
+  height: 30px;
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+.theme-btn:hover { color: var(--gold); border-color: var(--gold-dim); background: var(--bg-tertiary); }
+.theme-btn .theme-icon-light { display: none; }
+:root[data-theme="light"] .theme-btn .theme-icon-light { display: inline; }
+:root[data-theme="light"] .theme-btn .theme-icon-dark { display: none; }
 
 .month-nav {
   display: flex;
@@ -312,7 +361,7 @@ body {
 .quest-avatar svg {
   width: 28px;
   height: 36px;
-  filter: drop-shadow(0 2px 6px rgba(0,0,0,0.6));
+  filter: drop-shadow(0 2px 6px var(--avatar-shadow));
 }
 
 /* ===== Legend ===== */
@@ -546,7 +595,7 @@ body {
 .modal-backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(0, 0, 0, 0.8);
+  background: var(--modal-backdrop);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -564,7 +613,7 @@ body {
   width: 100%;
   max-width: 440px;
   position: relative;
-  box-shadow: 0 16px 48px rgba(0,0,0,0.5);
+  box-shadow: var(--shadow-modal);
 }
 
 .modal-close {
@@ -691,9 +740,9 @@ body {
 .btn-delete {
   background: var(--bg-tertiary);
   color: #da3633;
-  border: 1px solid #3a2020;
+  border: 1px solid var(--border-color);
 }
-.btn-delete:hover { background: #2a1515; }
+.btn-delete:hover { background: color-mix(in srgb, #da3633 14%, var(--bg-tertiary)); }
 
 /* ===== Settings Modal ===== */
 .settings-modal {

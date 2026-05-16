@@ -36,6 +36,9 @@ const platInstagram = document.getElementById('plat-instagram');
 const platTiktok = document.getElementById('plat-tiktok');
 const platTwitch = document.getElementById('plat-twitch');
 
+// Theme
+const themeBtn = document.getElementById('theme-btn');
+
 // Settings
 const settingsBtn = document.getElementById('settings-btn');
 const editEndeavorsBtn = document.getElementById('edit-endeavors-btn');
@@ -238,6 +241,17 @@ function wireEvents() {
   tipClose.addEventListener('click', () => {
     tipBanner.style.display = 'none';
     localStorage.setItem('clout-tip-dismissed', '1');
+  });
+
+  themeBtn.addEventListener('click', () => {
+    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+    if (isLight) {
+      document.documentElement.removeAttribute('data-theme');
+      localStorage.setItem('clout-theme', 'dark');
+    } else {
+      document.documentElement.setAttribute('data-theme', 'light');
+      localStorage.setItem('clout-theme', 'light');
+    }
   });
 
   modalClose.addEventListener('click', closeModal);
