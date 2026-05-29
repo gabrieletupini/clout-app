@@ -1,6 +1,7 @@
 import {
   initFirebase, subscribeToMonth, createDay, updateDay, deleteDay,
-  moveDayToDate, saveSettings, subscribeToSettings, onSyncStatus
+  moveDayToDate, saveSettings, subscribeToSettings, onSyncStatus,
+  onAuthReady, loginWithGoogle, logout
 } from './firebase.js';
 import {
   renderCalendar, computeWeeklyProgress,
@@ -14,6 +15,8 @@ let unsubSettings = null;
 let currentDaysMap = new Map();
 let endeavors = [...DEFAULT_ENDEAVORS];
 let settingsInitialized = false;
+let readOnly = false;
+let appStarted = false;
 
 // ===== DOM refs =====
 const grid = document.getElementById('calendar-grid');
@@ -69,6 +72,83 @@ const MONTHS = ['January','February','March','April','May','June','July','August
 // ===== Init =====
 document.addEventListener('DOMContentLoaded', () => {
   initFirebase();
+  wireAuthUI();
+
+  onAuthReady((user, reason) => {
+    const loginScreen = document.getElementById('login-screen');
+    const appContainer = document.getElementById('app-container');
+    const loginError = document.getElementById('login-error');
+
+    if (reason === 'unauthorized') {
+      loginError.textContent = 'This account is not authorized.';
+      return;
+    }
+
+    if (user) {
+      readOnly = false;
+      document.body.classList.remove('read-only');
+      loginScreen.classList.add('hidden');
+      appContainer.classList.remove('hidden');
+      document.getElementById('readonly-banner').classList.add('hidden');
+      if (!appStarted) startApp();
+    } else if (!readOnly) {
+      loginScreen.classList.remove('hidden');
+      appContainer.classList.add('hidden');
+    }
+  });
+});
+
+function wireAuthUI() {
+  const googleBtn = document.getElementById('google-login-btn');
+  const readonlyBtn = document.getElementById('readonly-btn');
+  const logoutBtn = document.getElementById('logout-btn');
+  const bannerSignin = document.getElementById('readonly-banner-signin');
+  const loginError = document.getElementById('login-error');
+
+  googleBtn.addEventListener('click', async () => {
+    loginError.textContent = '';
+    try {
+      await loginWithGoogle();
+    } catch (err) {
+      console.error('Login error:', err);
+      if (err.message === 'unauthorized') {
+        loginError.textContent = 'This account is not authorized.';
+      } else {
+        loginError.textContent = 'Sign-in failed. Please try again.';
+      }
+    }
+  });
+
+  readonlyBtn.addEventListener('click', () => {
+    readOnly = true;
+    document.body.classList.add('read-only');
+    document.getElementById('login-screen').classList.add('hidden');
+    document.getElementById('app-container').classList.remove('hidden');
+    document.getElementById('readonly-banner').classList.remove('hidden');
+    if (!appStarted) startApp();
+  });
+
+  logoutBtn.addEventListener('click', async () => {
+    try {
+      logoutBtn.disabled = true;
+      logoutBtn.textContent = 'Signing out…';
+      await logout();
+      location.reload();
+    } catch (err) {
+      console.error('Logout error:', err);
+      logoutBtn.disabled = false;
+      logoutBtn.textContent = 'Sign out';
+    }
+  });
+
+  bannerSignin.addEventListener('click', (e) => {
+    e.preventDefault();
+    location.reload();
+  });
+}
+
+function startApp() {
+  appStarted = true;
 
   // Wire sync status
   let connected = false;
@@ -108,7 +188,9 @@ document.addEventListener('DOMContentLoaded', () => {
     } else if (!settingsInitialized) {
       // First time — save defaults to Firestore so they're editable
       endeavors = [...DEFAULT_ENDEAVORS];
-      try { await saveSettings({ endeavors }); } catch (e) { console.error('Failed to save defaults:', e); }
+      if (!readOnly) {
+        try { await saveSettings({ endeavors }); } catch (e) { console.error('Failed to save defaults:', e); }
+      }
     } else {
       endeavors = [...DEFAULT_ENDEAVORS];
     }
@@ -124,7 +206,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   loadMonth();
   wireEvents();
-});
+}
 
 function loadMonth() {
   monthLabel.textContent = `${MONTHS[currentMonth - 1]} ${currentYear}`;
@@ -270,6 +352,7 @@ function wireEvents() {
   });
 
   grid.addEventListener('toggle-done', async (e) => {
+    if (readOnly) return;
     const { docId, done } = e.detail;
     if (docId) await updateDay(docId, { done });
   });
@@ -277,6 +360,7 @@ function wireEvents() {
 
 // ===== Day Modal =====
 function openModal(dateStr, dayData) {
+  if (readOnly) return;
   editingDate = dateStr;
   editingDocId = dayData ? dayData.docId : null;
 
@@ -337,6 +421,7 @@ function getSelectedPlatforms() {
 }
 
 async function handleSave() {
+  if (readOnly) return;
   const data = {
     date: editingDate,
     contentType: getSelectedType(),
@@ -355,16 +440,19 @@ async function handleSave() {
 }
 
 async function handleDelete() {
+  if (readOnly) return;
   if (editingDocId) await deleteDay(editingDocId);
   closeModal();
 }
 
 async function handleDrop(docId, newDate) {
+  if (readOnly) return;
   if (docId && newDate) await moveDayToDate(docId, newDate);
 }
 
 // ===== Settings Modal =====
 function openSettings() {
+  if (readOnly) return;
   renderEndeavorsForm();
   settingsBackdrop.classList.remove('hidden');
 }
@@ -468,6 +556,7 @@ function renderEndeavorsForm() {
 }
 
 async function handleSaveSettings() {
+  if (readOnly) return;
   const rows = endeavorsList.querySelectorAll('.endeavor-card');
   const updated = [];
 

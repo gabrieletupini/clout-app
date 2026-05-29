@@ -1,0 +1,30 @@
+rules_version = '2';
+
+// Clout Quest — Firestore security rules
+// Public read; writes restricted to whitelist.
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isAuthorized() {
+      return request.auth != null &&
+        request.auth.token.email in [
+          'gabritupini@gmail.com',
+          'gabritupini3@gmail.com'
+        ];
+    }
+
+    match /days/{dayId} {
+      allow read: if true;
+      allow write: if isAuthorized();
+    }
+
+    match /settings/{settingId} {
+      allow read: if true;
+      allow write: if isAuthorized();
+    }
+
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

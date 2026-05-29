@@ -1,5 +1,8 @@
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/11.4.0/firebase-app.js';
 import {
+  getAuth, GoogleAuthProvider, signInWithPopup, signOut, onAuthStateChanged
+} from 'https://www.gstatic.com/firebasejs/11.4.0/firebase-auth.js';
+import {
   getFirestore, collection, addDoc, updateDoc, deleteDoc, doc,
   query, where, onSnapshot, serverTimestamp, getDoc, setDoc
 } from 'https://www.gstatic.com/firebasejs/11.4.0/firebase-firestore.js';
@@ -14,13 +17,43 @@ const firebaseConfig = {
   measurementId: "G-RCYJBG5DJE"
 };
 
+const ALLOWED_EMAILS = ['gabritupini@gmail.com', 'gabritupini3@gmail.com'];
+
 let db;
+let auth;
 let syncCallback = null;
 
 export function initFirebase() {
   const app = initializeApp(firebaseConfig);
   db = getFirestore(app);
+  auth = getAuth(app);
   return db;
+}
+
+// ===== Auth =====
+export function onAuthReady(callback) {
+  return onAuthStateChanged(auth, (user) => {
+    if (user && !ALLOWED_EMAILS.includes(user.email)) {
+      signOut(auth);
+      callback(null, 'unauthorized');
+      return;
+    }
+    callback(user);
+  });
+}
+
+export async function loginWithGoogle() {
+  const provider = new GoogleAuthProvider();
+  const result = await signInWithPopup(auth, provider);
+  if (!ALLOWED_EMAILS.includes(result.user.email)) {
+    await signOut(auth);
+    throw new Error('unauthorized');
+  }
+  return result.user;
+}
+
+export async function logout() {
+  return signOut(auth);
 }
 
 // Sync status — calls back with 'synced', 'error', or 'syncing'
