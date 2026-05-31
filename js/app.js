@@ -114,8 +114,14 @@ function wireAuthUI() {
       console.error('Login error:', err);
       if (err.message === 'unauthorized') {
         loginError.textContent = 'This account is not authorized.';
+      } else if (err.code === 'auth/unauthorized-domain') {
+        loginError.innerHTML = 'Domain not authorized in Firebase. Add <code>gabrieletupini.github.io</code> in Firebase Console → Authentication → Settings → Authorized domains.';
+      } else if (err.code === 'auth/popup-blocked') {
+        loginError.textContent = 'Popup blocked by browser. Allow popups for this site and retry.';
+      } else if (err.code === 'auth/popup-closed-by-user' || err.code === 'auth/cancelled-popup-request') {
+        loginError.textContent = 'Sign-in cancelled. Try again.';
       } else {
-        loginError.textContent = 'Sign-in failed. Please try again.';
+        loginError.textContent = `Sign-in failed: ${err.code || err.message || 'unknown error'}`;
       }
     }
   });
