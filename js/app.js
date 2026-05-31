@@ -7,6 +7,7 @@ import {
   renderCalendar, computeWeeklyProgress,
   DEFAULT_ENDEAVORS, ICON_PRESETS, endeavorMap
 } from './calendar.js';
+import { initLibrary } from './library.js';
 
 // ===== State =====
 let currentYear, currentMonth;
@@ -206,6 +207,34 @@ function startApp() {
 
   loadMonth();
   wireEvents();
+  initLibrary({ readOnly });
+  wireViewTabs();
+}
+
+function wireViewTabs() {
+  const tabs = document.querySelectorAll('.view-tab');
+  const views = {
+    calendar: document.getElementById('calendar-view'),
+    library: document.getElementById('library-view')
+  };
+
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      const target = tab.dataset.view;
+
+      tabs.forEach(t => {
+        const isActive = t === tab;
+        t.classList.toggle('active', isActive);
+        t.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      Object.entries(views).forEach(([name, el]) => {
+        el.classList.toggle('active', name === target);
+      });
+
+      document.body.classList.toggle('view-library', target === 'library');
+    });
+  });
 }
 
 function loadMonth() {

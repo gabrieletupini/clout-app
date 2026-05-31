@@ -22,6 +22,11 @@ service cloud.firestore {
       allow write: if isAuthorized();
     }
 
+    match /library/{itemId} {
+      allow read: if true;
+      allow write: if isAuthorized();
+    }
+
     // Default deny
     match /{document=**} {
       allow read, write: if false;

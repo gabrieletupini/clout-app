@@ -186,3 +186,65 @@ export function subscribeToSettings(callback) {
     callback(null);
   });
 }
+
+// ===== Library (content references) CRUD =====
+
+export function subscribeToLibrary(callback) {
+  return onSnapshot(collection(db, 'library'), (snapshot) => {
+    reportSync('synced');
+    const items = [];
+    snapshot.forEach((docSnap) => {
+      items.push({ docId: docSnap.id, ...docSnap.data() });
+    });
+    items.sort((a, b) => {
+      const ta = a.createdAt?.toMillis ? a.createdAt.toMillis() : 0;
+      const tb = b.createdAt?.toMillis ? b.createdAt.toMillis() : 0;
+      return tb - ta;
+    });
+    callback(items);
+  }, (err) => {
+    console.error('Library subscribe error:', err);
+    reportSync('error');
+  });
+}
+
+export async function createLibraryItem(data) {
+  reportSync('syncing');
+  try {
+    const docRef = await addDoc(collection(db, 'library'), {
+      ...data,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+    reportSync('synced');
+    return docRef.id;
+  } catch (err) {
+    console.error('createLibraryItem error:', err);
+    reportSync('error');
+  }
+}
+
+export async function updateLibraryItem(docId, fields) {
+  reportSync('syncing');
+  try {
+    await updateDoc(doc(db, 'library', docId), {
+      ...fields,
+      updatedAt: serverTimestamp()
+    });
+    reportSync('synced');
+  } catch (err) {
+    console.error('updateLibraryItem error:', err);
+    reportSync('error');
+  }
+}
+
+export async function deleteLibraryItem(docId) {
+  reportSync('syncing');
+  try {
+    await deleteDoc(doc(db, 'library', docId));
+    reportSync('synced');
+  } catch (err) {
+    console.error('deleteLibraryItem error:', err);
+    reportSync('error');
+  }
+}

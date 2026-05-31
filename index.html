@@ -78,12 +78,21 @@
       </button>
       <button id="logout-btn" class="logout-btn edit-only" title="Sign out">Sign out</button>
     </div>
-    <nav class="month-nav">
+    <nav class="month-nav" id="month-nav">
       <button id="prev-month" class="nav-btn" aria-label="Previous month">&#9664;</button>
       <span id="month-label" class="month-label">February 2026</span>
       <button id="next-month" class="nav-btn" aria-label="Next month">&#9654;</button>
     </nav>
   </header>
+
+  <!-- View Tabs -->
+  <div class="view-tabs" role="tablist">
+    <button class="view-tab active" data-view="calendar" role="tab" aria-selected="true">&#128197; Calendar</button>
+    <button class="view-tab" data-view="library" role="tab" aria-selected="false">&#128218; Library</button>
+  </div>
+
+  <!-- ===== Calendar View ===== -->
+  <div id="calendar-view" class="view active">
 
   <!-- Quest Path -->
   <div class="quest-section">
@@ -172,6 +181,101 @@
   </div>
 
   <div id="calendar-grid" class="calendar-grid"></div>
+
+  </div><!-- /#calendar-view -->
+
+  <!-- ===== Library View ===== -->
+  <div id="library-view" class="view">
+    <div class="library-header">
+      <div class="library-title-row">
+        <h2 class="library-title">Content Library</h2>
+        <button id="library-add-btn" class="btn btn-save edit-only" type="button">&#43; Add Reference</button>
+      </div>
+      <p class="library-subtitle">Save reels &amp; TikToks to remember and classify. Tag what you can do solo, with a +1, or with AI.</p>
+    </div>
+
+    <div class="library-filters">
+      <label class="filter-group">
+        <span class="filter-label">Category</span>
+        <select id="filter-category" class="filter-select"><option value="">All</option></select>
+      </label>
+      <label class="filter-group">
+        <span class="filter-label">Doability</span>
+        <select id="filter-doability" class="filter-select">
+          <option value="">All</option>
+          <option value="solo">Solo</option>
+          <option value="plusOne">Needs +1</option>
+          <option value="ai">AI-assisted</option>
+        </select>
+      </label>
+      <label class="filter-group filter-search">
+        <span class="filter-label">Search</span>
+        <input type="text" id="filter-search" class="filter-input" placeholder="Title, notes...">
+      </label>
+    </div>
+
+    <div id="library-list" class="library-list"></div>
+    <div id="library-empty" class="library-empty hidden">
+      <p>No references yet.</p>
+      <p class="library-empty-hint">Click <strong>Add Reference</strong> to paste your first reel or TikTok link.</p>
+    </div>
+  </div>
+
+  <!-- ===== Library Modal ===== -->
+  <div id="library-backdrop" class="modal-backdrop hidden">
+    <div class="modal" role="dialog" aria-modal="true">
+      <button id="library-modal-close" class="modal-close" aria-label="Close">&times;</button>
+      <h2 id="library-modal-heading" class="modal-heading">Add Reference</h2>
+
+      <label class="field-label" for="lib-url">Link</label>
+      <input type="url" id="lib-url" class="field-input" placeholder="https://www.tiktok.com/... or https://www.instagram.com/reel/...">
+      <div id="lib-platform-badge" class="lib-platform-badge"></div>
+
+      <label class="field-label" for="lib-title">Title <span class="field-optional">(optional)</span></label>
+      <input type="text" id="lib-title" class="field-input" placeholder="Short label to remember it by">
+
+      <label class="field-label" for="lib-category">Category</label>
+      <input type="text" id="lib-category" class="field-input" placeholder="e.g. Music Video, Skit, Tutorial..." list="lib-category-suggestions">
+      <datalist id="lib-category-suggestions">
+        <option value="Music Video"></option>
+        <option value="Skit"></option>
+        <option value="Tutorial"></option>
+        <option value="Vlog"></option>
+        <option value="Storytime"></option>
+        <option value="Reaction"></option>
+        <option value="Performance"></option>
+        <option value="Behind the Scenes"></option>
+        <option value="Trend"></option>
+      </datalist>
+
+      <label class="field-label">Doability <span class="field-optional">(pick all that apply)</span></label>
+      <div class="doability-checks">
+        <label class="doability-chip">
+          <input type="checkbox" id="lib-doability-solo">
+          <span class="doability-chip-icon">&#128104;</span>
+          <span>Solo</span>
+        </label>
+        <label class="doability-chip">
+          <input type="checkbox" id="lib-doability-plusone">
+          <span class="doability-chip-icon">&#128101;</span>
+          <span>Needs +1</span>
+        </label>
+        <label class="doability-chip">
+          <input type="checkbox" id="lib-doability-ai">
+          <span class="doability-chip-icon">&#129302;</span>
+          <span>AI-assisted</span>
+        </label>
+      </div>
+
+      <label class="field-label" for="lib-notes">Notes <span class="field-optional">(optional)</span></label>
+      <textarea id="lib-notes" class="field-textarea" rows="2" placeholder="Why it caught your eye, ideas to adapt..."></textarea>
+
+      <div class="modal-actions">
+        <button id="library-save" class="btn btn-save" type="button">Save</button>
+        <button id="library-delete" class="btn btn-delete" type="button">Delete</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Day Detail Modal -->
   <div id="modal-backdrop" class="modal-backdrop hidden">
