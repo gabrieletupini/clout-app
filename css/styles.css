@@ -1154,6 +1154,43 @@ body.view-library #month-nav { display: none; }
 }
 
 .library-list {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.library-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.library-group-heading {
+  font-family: var(--font-medieval);
+  font-size: 1.05rem;
+  color: var(--gold);
+  font-weight: 400;
+  letter-spacing: 0.8px;
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  border-bottom: 1px solid var(--border-color);
+  padding-bottom: 6px;
+}
+
+.library-group-name { flex: 1; }
+
+.library-group-count {
+  font-family: var(--font-body);
+  font-size: 0.65rem;
+  color: var(--text-muted);
+  background: var(--bg-tertiary);
+  padding: 2px 8px;
+  border-radius: 10px;
+  letter-spacing: 0.3px;
+}
+
+.library-group-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
   gap: 12px;
@@ -1181,6 +1218,30 @@ body.view-library #month-nav { display: none; }
   gap: 8px;
   justify-content: space-between;
 }
+
+.library-card-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+.library-type-badge {
+  font-size: 0.6rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 10px;
+  background: var(--bg-tertiary);
+  color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+.library-type-badge.type-reel { color: #e879f9; border-color: #6b3a82; }
+.library-type-badge.type-carousel { color: #fbbf24; border-color: #7a5a1a; }
+.library-type-badge.type-profile { color: #7aa8e0; border-color: #2d4a6e; }
+.library-type-badge.type-story { color: #fb7185; border-color: #6e2a3a; }
+.library-type-badge.type-video { color: #f87171; border-color: #6e2a2a; }
 
 .library-platform {
   font-size: 0.62rem;
@@ -1336,6 +1397,98 @@ body.read-only .library-icon-btn { display: none; }
 }
 .doability-chip-icon { font-size: 1rem; }
 
+/* ===== Library: field row (Type + img-index side-by-side) ===== */
+.field-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+.field-col {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ===== Library: collapsible review section ===== */
+.review-section {
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius);
+  background: var(--bg-tertiary);
+  margin-bottom: 12px;
+  padding: 0;
+}
+
+.review-summary {
+  cursor: pointer;
+  padding: 10px 12px;
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  letter-spacing: 0.4px;
+  font-weight: 600;
+  text-transform: uppercase;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  user-select: none;
+  list-style: none;
+}
+.review-summary::-webkit-details-marker { display: none; }
+.review-summary::marker { display: none; }
+.review-summary:hover { color: var(--gold); }
+
+.review-toggle-icon {
+  transition: transform 0.2s;
+  font-size: 0.7rem;
+}
+.review-section[open] .review-toggle-icon { transform: rotate(90deg); }
+
+.review-count {
+  margin-left: auto;
+  font-size: 0.65rem;
+  color: var(--gold);
+  font-weight: 500;
+  text-transform: none;
+  letter-spacing: 0.3px;
+}
+
+.review-fields {
+  padding: 4px 12px 12px;
+  border-top: 1px solid var(--border-color);
+}
+.review-fields .field-label:first-child { margin-top: 8px; }
+
+/* ===== Library card: review summary ===== */
+.library-card-review {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border-top: 1px solid var(--border-color);
+  padding-top: 8px;
+  font-size: 0.75rem;
+}
+
+.library-card-review-row {
+  display: flex;
+  gap: 8px;
+  line-height: 1.4;
+}
+
+.library-card-review-label {
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  font-size: 0.6rem;
+  min-width: 56px;
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.library-card-review-value {
+  color: var(--text-secondary);
+  flex: 1;
+  word-break: break-word;
+}
+
 /* ===== Responsive ===== */
 @media (max-width: 640px) {
   .header { flex-direction: column; align-items: flex-start; gap: 8px; }
@@ -1350,6 +1503,7 @@ body.read-only .library-icon-btn { display: none; }
   .day-hint { display: none; }
   .legend-section { flex-direction: column; align-items: flex-start; }
   .edit-endeavors-btn { align-self: stretch; text-align: center; }
-  .library-list { grid-template-columns: 1fr; }
+  .library-group-grid { grid-template-columns: 1fr; }
   .view-tab { padding: 10px 12px; font-size: 0.78rem; }
+  .field-row { flex-direction: column; gap: 0; }
 }

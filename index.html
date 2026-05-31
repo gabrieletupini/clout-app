@@ -200,6 +200,19 @@
         <select id="filter-category" class="filter-select"><option value="">All</option></select>
       </label>
       <label class="filter-group">
+        <span class="filter-label">Type</span>
+        <select id="filter-type" class="filter-select">
+          <option value="">All</option>
+          <option value="post">Post</option>
+          <option value="reel">Reel</option>
+          <option value="carousel">Carousel</option>
+          <option value="profile">Profile</option>
+          <option value="story">Story</option>
+          <option value="video">Video</option>
+          <option value="other">Other</option>
+        </select>
+      </label>
+      <label class="filter-group">
         <span class="filter-label">Doability</span>
         <select id="filter-doability" class="filter-select">
           <option value="">All</option>
@@ -231,12 +244,33 @@
       <input type="url" id="lib-url" class="field-input" placeholder="https://www.tiktok.com/... or https://www.instagram.com/reel/...">
       <div id="lib-platform-badge" class="lib-platform-badge"></div>
 
-      <label class="field-label" for="lib-title">Title <span class="field-optional">(optional)</span></label>
-      <input type="text" id="lib-title" class="field-input" placeholder="Short label to remember it by">
+      <label class="field-label" for="lib-title">Title / Handle <span class="field-optional">(optional)</span></label>
+      <input type="text" id="lib-title" class="field-input" placeholder="@handle or short label">
 
-      <label class="field-label" for="lib-category">Category</label>
-      <input type="text" id="lib-category" class="field-input" placeholder="e.g. Music Video, Skit, Tutorial..." list="lib-category-suggestions">
+      <div class="field-row">
+        <div class="field-col">
+          <label class="field-label" for="lib-type">Type</label>
+          <select id="lib-type" class="field-input">
+            <option value="post">Post</option>
+            <option value="reel">Reel</option>
+            <option value="carousel">Carousel</option>
+            <option value="profile">Profile</option>
+            <option value="story">Story</option>
+            <option value="video">Video</option>
+            <option value="other">Other</option>
+          </select>
+        </div>
+        <div class="field-col" id="lib-img-index-wrap" style="display:none;">
+          <label class="field-label" for="lib-img-index">Carousel image # <span class="field-optional">(optional)</span></label>
+          <input type="number" id="lib-img-index" class="field-input" min="1" placeholder="e.g. 6">
+        </div>
+      </div>
+
+      <label class="field-label" for="lib-category">Category / Theme</label>
+      <input type="text" id="lib-category" class="field-input" placeholder="e.g. Lifestyle, Personal Brand, Music Video..." list="lib-category-suggestions">
       <datalist id="lib-category-suggestions">
+        <option value="Lifestyle"></option>
+        <option value="Personal Brand"></option>
         <option value="Music Video"></option>
         <option value="Skit"></option>
         <option value="Tutorial"></option>
@@ -267,8 +301,35 @@
         </label>
       </div>
 
+      <details class="review-section" id="lib-review-section">
+        <summary class="review-summary">
+          <span class="review-toggle-icon">&#9656;</span>
+          <span>Review prompts</span>
+          <span class="review-count" id="lib-review-count"></span>
+        </summary>
+        <div class="review-fields">
+          <label class="field-label" for="lib-rev-hook">Hook <span class="field-optional">first line / first frame that stops the scroll</span></label>
+          <input type="text" id="lib-rev-hook" class="field-input">
+
+          <label class="field-label" for="lib-rev-format">Format <span class="field-optional">carousel, reel, text-over-photo...</span></label>
+          <input type="text" id="lib-rev-format" class="field-input">
+
+          <label class="field-label" for="lib-rev-visual">Visual style <span class="field-optional">colors, fonts, layout, editing</span></label>
+          <input type="text" id="lib-rev-visual" class="field-input">
+
+          <label class="field-label" for="lib-rev-tone">Voice / tone <span class="field-optional">casual, authoritative, storytelling</span></label>
+          <input type="text" id="lib-rev-tone" class="field-input">
+
+          <label class="field-label" for="lib-rev-cta">CTA <span class="field-optional">what they ask the viewer to do</span></label>
+          <input type="text" id="lib-rev-cta" class="field-input">
+
+          <label class="field-label" for="lib-rev-why">Why it works <span class="field-optional">the one thing worth stealing</span></label>
+          <textarea id="lib-rev-why" class="field-textarea" rows="2"></textarea>
+        </div>
+      </details>
+
       <label class="field-label" for="lib-notes">Notes <span class="field-optional">(optional)</span></label>
-      <textarea id="lib-notes" class="field-textarea" rows="2" placeholder="Why it caught your eye, ideas to adapt..."></textarea>
+      <textarea id="lib-notes" class="field-textarea" rows="2" placeholder="Anything else worth remembering..."></textarea>
 
       <div class="modal-actions">
         <button id="library-save" class="btn btn-save" type="button">Save</button>
